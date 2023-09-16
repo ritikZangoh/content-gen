@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import ClipLoader from 'react-spinners/ClipLoader'
+import { Icon } from '@iconify/react'
 
 export default function Home() {
   const [typeOfContent, setTypeOfContent] = useState('')
@@ -23,6 +24,7 @@ export default function Home() {
   const width = searchParams.get('width')
   const height = searchParams.get('height')
   const modalID = searchParams.get('key')
+  const [waitForResponse, setWaitForResponce] = useState(false)
 
   // To set the readOnly state
   useEffect(() => {
@@ -75,7 +77,8 @@ export default function Home() {
 
   // To handle the generate content
   async function handleGenerateContent() {
-    if ( !message ) return
+    if ( !message || waitForResponse) return
+    setWaitForResponce(true);
     setLoading(true);
 
     try {
@@ -99,6 +102,7 @@ export default function Home() {
       console.log('Error: ' + error)
     }
     setLoading(false);
+    setWaitForResponce(false);
   }
 
   return (
@@ -110,10 +114,10 @@ export default function Home() {
         className="w-[491px] shadow-md relative rounded-xl px-6 py-5"
         style={{ width: width + 'px', height: height + 'px' }}
       >
-        <ClipLoader
+        {/* <ClipLoader
           cssOverride={{ position: 'absolute', top: '20px', right: '50%' }}
           loading={loading}
-        />
+        /> */}
         <div className="relative">
           <h2
             className="text-[14px] font-bold mt-6 text-[#16192C]"
@@ -142,10 +146,17 @@ export default function Home() {
             style={{
               fontWeight: buttonWeight,
               background: '#' + buttonColor,
-              opacity: paidStatus ? '1' : '0.5',
+              opacity: paidStatus? '1' : '0.5',
             }}
           >
             Generate
+            {loading && 
+              <Icon
+                className="h-6 w-10 scale-[2] text-purple-600 ml-2 inline-block"
+                style=""
+                icon="eos-icons:three-dots-loading"
+              />
+            }
           </button>
 
           <h2
